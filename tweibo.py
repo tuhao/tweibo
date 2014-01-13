@@ -20,10 +20,9 @@ cfg = lambda name:config.get(CFG_SESSION,name)
 
 class Tweibo:
 
-	def __init__(self,timestamp):
+	def __init__(self):
 		self.base_url = 'http://open.t.qq.com/api/search/t'
 		self.hasnext = 0
-		self.timestamp = timestamp
 		self.params = dict(
 			format='json',
 			contenttype=4,
@@ -71,10 +70,10 @@ class Tweibo:
 
 starttime = datetime.datetime.now() - datetime.timedelta(hours =1 )
 starttime = int(time.mktime(starttime.timetuple()))
-weibo = Tweibo(starttime)
-
 startpage = 1
 timestamp = int(time.time())
+weibo = Tweibo()
+
 while True:
 	print startpage
 	query = dict(
@@ -89,4 +88,3 @@ while True:
 		print 'weibo.hasnext %s ' % (weibo.hasnext)
 		break
 	time.sleep(3)
-
