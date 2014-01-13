@@ -24,7 +24,6 @@ class Tweibo:
 		self.base_url = 'http://open.t.qq.com/api/search/t'
 		self.hasnext = 0
 		self.timestamp = timestamp
-		self.stop = False
 		self.params = dict(
 			format='json',
 			contenttype=4,
@@ -54,27 +53,30 @@ class Tweibo:
 	def generate(self,content):
 		ret = json.loads(content)
 		data = ret.get('data',{})
-		self.hasnext = int(data.get('hasnext',None))
-		items = data.get('info',[])
-		with open('food.txt','w') as f:
-			for item in items:
-				if int(item['timestamp']) >= self.timestamp:
+		if data is None:
+			print data
+		else:
+			self.hasnext = str(data.get('hasnext',None))
+			print 'hasnext:%s' % (self.hasnext)
+			items = data.get('info',[])
+			with open('food.txt','a') as f:
+				for item in items:
 					print item['text'].encode('utf-8')
 					f.write(item['text'].encode('utf-8') + '\n')
-					for pic in item['pic']['info']:
-						print ''.join(pic['url']) + '/460.jpg'
-						f.write(''.join(pic['url']) + '/460.jpg' + '\n')
-				else:
-					self.stop = True
-					break
+					pics = item.get('pic',None)
+					if pics:
+						for image in pics['info']:
+							print ''.join(image['url']) + '/460.jpg'
+							f.write(''.join(image['url']) + '/460.jpg' + '\n')
 
-starttime = datetime.datetime.now() - datetime.timedelta(hours=1 )
+starttime = datetime.datetime.now() - datetime.timedelta(hours =1 )
 starttime = int(time.mktime(starttime.timetuple()))
 weibo = Tweibo(starttime)
 
+startpage = 1
+timestamp = int(time.time())
 while True:
-	timestamp = int(time.time())
-	startpage = 0
+	print startpage
 	query = dict(
 			keyword='美食',
 			page=startpage,
@@ -83,7 +85,8 @@ while True:
 			endtime=timestamp,)
 	weibo.search(query)
 	startpage = startpage + 1
-	if weibo.hasnext < 1 or weibo.stop:
-		print 'weibo.hasnext %d ,weibo.stop %s' % (weibo.hasnext,weibo.stop)
+	if weibo.hasnext == '2' or weibo.hasnext == '0':
+		print 'weibo.hasnext %s ' % (weibo.hasnext)
 		break
 	time.sleep(3)
+
