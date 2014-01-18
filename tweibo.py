@@ -10,11 +10,12 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 import DataService
+import os
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-CFG_FILE = 'conf/conf.ini'
+CFG_FILE = os.path.dirname(__file__) + '/conf/conf.ini'
 CFG_SESSION = 'tweibo'
 
 config = ConfigParser.ConfigParser()
