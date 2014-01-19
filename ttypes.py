@@ -197,25 +197,31 @@ class News:
 class Message:
   """
   Attributes:
+   - id
    - title
    - content
    - reason
    - create_time
+   - sort_id
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'title', None, None, ), # 1
-    (2, TType.STRING, 'content', None, None, ), # 2
-    (3, TType.STRING, 'reason', None, None, ), # 3
-    (4, TType.STRING, 'create_time', None, None, ), # 4
+    (1, TType.I32, 'id', None, None, ), # 1
+    (2, TType.STRING, 'title', None, None, ), # 2
+    (3, TType.STRING, 'content', None, None, ), # 3
+    (4, TType.STRING, 'reason', None, None, ), # 4
+    (5, TType.STRING, 'create_time', None, None, ), # 5
+    (6, TType.I32, 'sort_id', None, None, ), # 6
   )
 
-  def __init__(self, title=None, content=None, reason=None, create_time=None,):
+  def __init__(self, id=None, title=None, content=None, reason=None, create_time=None, sort_id=None,):
+    self.id = id
     self.title = title
     self.content = content
     self.reason = reason
     self.create_time = create_time
+    self.sort_id = sort_id
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -227,23 +233,33 @@ class Message:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.title = iprot.readString();
+        if ftype == TType.I32:
+          self.id = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.content = iprot.readString();
+          self.title = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.reason = iprot.readString();
+          self.content = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
+          self.reason = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
           self.create_time = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I32:
+          self.sort_id = iprot.readI32();
         else:
           iprot.skip(ftype)
       else:
@@ -256,21 +272,29 @@ class Message:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('Message')
+    if self.id is not None:
+      oprot.writeFieldBegin('id', TType.I32, 1)
+      oprot.writeI32(self.id)
+      oprot.writeFieldEnd()
     if self.title is not None:
-      oprot.writeFieldBegin('title', TType.STRING, 1)
+      oprot.writeFieldBegin('title', TType.STRING, 2)
       oprot.writeString(self.title)
       oprot.writeFieldEnd()
     if self.content is not None:
-      oprot.writeFieldBegin('content', TType.STRING, 2)
+      oprot.writeFieldBegin('content', TType.STRING, 3)
       oprot.writeString(self.content)
       oprot.writeFieldEnd()
     if self.reason is not None:
-      oprot.writeFieldBegin('reason', TType.STRING, 3)
+      oprot.writeFieldBegin('reason', TType.STRING, 4)
       oprot.writeString(self.reason)
       oprot.writeFieldEnd()
     if self.create_time is not None:
-      oprot.writeFieldBegin('create_time', TType.STRING, 4)
+      oprot.writeFieldBegin('create_time', TType.STRING, 5)
       oprot.writeString(self.create_time)
+      oprot.writeFieldEnd()
+    if self.sort_id is not None:
+      oprot.writeFieldBegin('sort_id', TType.I32, 6)
+      oprot.writeI32(self.sort_id)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
