@@ -9,7 +9,7 @@ from JsonGenerator import generate
 from MySQLClient import MySQLClient
 #from ThriftClient import ThriftClient
 
-starttime = datetime.datetime.now() - datetime.timedelta(minutes =5 )
+starttime = datetime.datetime.now() - datetime.timedelta(minutes =15 )
 starttime = int(time.mktime(starttime.timetuple()))
 startpage = 1
 timestamp = int(time.time())
