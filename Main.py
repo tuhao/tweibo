@@ -9,7 +9,7 @@ from JsonGenerator import generate
 from MySQLClient import MySQLClient
 from ThriftClient import ThriftClient
 
-starttime = datetime.datetime.now() - datetime.timedelta(minutes =15 )
+starttime = datetime.datetime.now() - datetime.timedelta(hours =1 )
 starttime = int(time.mktime(starttime.timetuple()))
 startpage = 1
 timestamp = int(time.time())
@@ -30,7 +30,7 @@ while True:
 	query = dict(
 			keyword='美食',
 			page=startpage,
-			pagesize=2,
+			pagesize=30,
 			starttime=starttime,
 			endtime=timestamp,)
 	weibo.search(query)
