@@ -46,6 +46,14 @@ class Iface:
     """
     pass
 
+  def pullMsgBySort(self, size, sort_id):
+    """
+    Parameters:
+     - size
+     - sort_id
+    """
+    pass
+
 
 class Client(Iface):
   def __init__(self, iprot, oprot=None):
@@ -174,6 +182,38 @@ class Client(Iface):
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "pullMsg failed: unknown result");
 
+  def pullMsgBySort(self, size, sort_id):
+    """
+    Parameters:
+     - size
+     - sort_id
+    """
+    self.send_pullMsgBySort(size, sort_id)
+    return self.recv_pullMsgBySort()
+
+  def send_pullMsgBySort(self, size, sort_id):
+    self._oprot.writeMessageBegin('pullMsgBySort', TMessageType.CALL, self._seqid)
+    args = pullMsgBySort_args()
+    args.size = size
+    args.sort_id = sort_id
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_pullMsgBySort(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = pullMsgBySort_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "pullMsgBySort failed: unknown result");
+
 
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
@@ -183,6 +223,7 @@ class Processor(Iface, TProcessor):
     self._processMap["pushNews"] = Processor.process_pushNews
     self._processMap["pushString"] = Processor.process_pushString
     self._processMap["pullMsg"] = Processor.process_pullMsg
+    self._processMap["pullMsgBySort"] = Processor.process_pullMsgBySort
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -239,6 +280,17 @@ class Processor(Iface, TProcessor):
     result = pullMsg_result()
     result.success = self._handler.pullMsg(args.size)
     oprot.writeMessageBegin("pullMsg", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_pullMsgBySort(self, seqid, iprot, oprot):
+    args = pullMsgBySort_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = pullMsgBySort_result()
+    result.success = self._handler.pullMsgBySort(args.size, args.sort_id)
+    oprot.writeMessageBegin("pullMsgBySort", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -729,6 +781,146 @@ class pullMsg_result:
       oprot.writeListBegin(TType.STRUCT, len(self.success))
       for iter27 in self.success:
         iter27.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class pullMsgBySort_args:
+  """
+  Attributes:
+   - size
+   - sort_id
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'size', None, None, ), # 1
+    (2, TType.I32, 'sort_id', None, None, ), # 2
+  )
+
+  def __init__(self, size=None, sort_id=None,):
+    self.size = size
+    self.sort_id = sort_id
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.size = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.sort_id = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('pullMsgBySort_args')
+    if self.size is not None:
+      oprot.writeFieldBegin('size', TType.I32, 1)
+      oprot.writeI32(self.size)
+      oprot.writeFieldEnd()
+    if self.sort_id is not None:
+      oprot.writeFieldBegin('sort_id', TType.I32, 2)
+      oprot.writeI32(self.sort_id)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class pullMsgBySort_result:
+  """
+  Attributes:
+   - success
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(Message, Message.thrift_spec)), None, ), # 0
+  )
+
+  def __init__(self, success=None,):
+    self.success = success
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype31, _size28) = iprot.readListBegin()
+          for _i32 in xrange(_size28):
+            _elem33 = Message()
+            _elem33.read(iprot)
+            self.success.append(_elem33)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('pullMsgBySort_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter34 in self.success:
+        iter34.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
