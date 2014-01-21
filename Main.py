@@ -4,10 +4,10 @@ import time
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-from Tweibo import Tweibo
+from tweibo import Tweibo
 from JsonGenerator import generate
 from MySQLClient import MySQLClient
-#from ThriftClient import ThriftClient
+from ThriftClient import ThriftClient
 
 starttime = datetime.datetime.now() - datetime.timedelta(minutes =15 )
 starttime = int(time.mktime(starttime.timetuple()))
@@ -18,7 +18,7 @@ weibo = Tweibo()
 
 def thrift_send(content):
 	thrift_client = ThriftClient()
-	thrift_client.process()
+	thrift_client.send(content)
 
 def mysql_save(create_time,content):
 	mysql_client = MySQLClient()
@@ -36,7 +36,8 @@ while True:
 	weibo.search(query)
 	result = generate(weibo.content)
 	create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	mysql_save(create_time,result[0])
+	#mysql_save(create_time,result[0])
+	thrift_send(result[0])
 	if result[1] == '2' or result[1] == '0':
 		print 'hasnext %s ' % (result[1])
 		break
