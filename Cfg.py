@@ -1,7 +1,8 @@
 #coding=utf-8
 import ConfigParser
+import os
 
-CFG_FILE = 'conf/conf.ini'
+CFG_FILE = os.path.dirname(__file__) + '/conf/conf.ini'
 CFG_SESSION = 'tweibo'
 
 config = ConfigParser.ConfigParser()
