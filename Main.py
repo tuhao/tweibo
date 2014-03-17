@@ -25,20 +25,23 @@ def mysql_save(create_time,content):
 	with mysql_client:
 		mysql_client.insert(create_time,content)
 
+keys=['美食','小吃']
+
 while True:
-	print startpage
-	query = dict(
-			keyword='美食',
-			page=startpage,
-			pagesize=30,
-			starttime=starttime,
-			endtime=timestamp,)
-	weibo.search(query)
-	result = generate(weibo.content)
-	create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	#mysql_save(create_time,result[0])
-	thrift_send(result[0])
-	if result[1] == '2' or result[1] == '0':
-		print 'hasnext %s ' % (result[1])
-		break
-	startpage = startpage + 1
+	for key in keys:
+		print startpage
+		query = dict(
+				keyword=key,
+				page=startpage,
+				pagesize=30,
+				starttime=starttime,
+				endtime=timestamp,)
+		weibo.search(query)
+		result = generate(weibo.content)
+		create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		#mysql_save(create_time,result[0])
+		thrift_send(result[0])
+		if result[1] == '2' or result[1] == '0':
+			print 'hasnext %s ' % (result[1])
+			break
+		startpage = startpage + 1
