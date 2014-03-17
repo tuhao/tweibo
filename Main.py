@@ -27,9 +27,10 @@ def mysql_save(create_time,content):
 
 keys=['美食','小吃']
 
-while True:
-	for key in keys:
+for key in keys:
+	while True:
 		print startpage
+		print key
 		query = dict(
 				keyword=key,
 				page=startpage,
@@ -45,3 +46,4 @@ while True:
 			print 'hasnext %s ' % (result[1])
 			break
 		startpage = startpage + 1
+		time.sleep(2)
