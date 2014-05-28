@@ -4,7 +4,7 @@ import time
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-from tweibo import Tweibo
+from Tweibo import Tweibo
 from JsonGenerator import generate
 from MySQLClient import MySQLClient
 from ThriftClient import ThriftClient

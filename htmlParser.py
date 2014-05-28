@@ -1,9 +1,8 @@
 #coding=utf-8
-import sys
-import os
 from HTMLParser import HTMLParser
+import sys,os
 reload(sys)
-sys.setdefaultencoding='utf-8'
+sys.setdefaultencoding("utf-8")
 
 
 class DataParser(HTMLParser):
@@ -17,6 +16,9 @@ class DataParser(HTMLParser):
 			for (variable,value) in attrs:
 				if variable == 'href':
 					self.links.append(value)
+
+	def handle_data(self,data):
+		print data
 
 
 contentPath = os.path.dirname(__file__) + '/search.html'
