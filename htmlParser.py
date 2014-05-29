@@ -1,6 +1,7 @@
 #coding=utf-8
 from HTMLParser import HTMLParser
 import sys,os
+import re
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -13,7 +14,7 @@ class DataParser(HTMLParser):
 
 	def __init__(self):
 		self.links = []
-		self.data = []
+		self.data = ''
 		self.img = None
 		self.process = PROCESS.INIT
 		HTMLParser.__init__(self)
@@ -35,28 +36,28 @@ class DataParser(HTMLParser):
 				if self.img:
 					if variable == 'src':
 						self.links.append(value)
-						self.data.append('<img>')
-						self.data.append(value)
-						self.data.append('</img>')
+						self.data += '<img>'
+						self.data += value
+						self.data += '</img>'
 						self.img = None
 						break
 
 	def handle_data(self,data):
 		if self.process == PROCESS.START:
-			self.data.append('<content>')
+			self.data += '<content>'
 			self.process = PROCESS.ON
 		elif self.process == PROCESS.ON:
-			self.data.append(data)
+			self.data += data
 
 
 
 	def handle_endtag(self,tag):
 		if tag == 'p':
 			if self.process == PROCESS.ON:
-				self.data.append('</content>')
+				self.data += '</content>'
 			self.process = PROCESS.END
 			
-
+WEIBO_REGEX = re.compile(r'<content>.*?</img>')
 
 contentPath = os.path.dirname(__file__) + '/search.html'
 with open(contentPath,'r') as f:
@@ -65,5 +66,4 @@ with open(contentPath,'r') as f:
 	dp.feed(content)
 	dp.close()
 	#print dp.links
-	for item in dp.data:
-		print item
+	print dp.data
