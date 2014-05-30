@@ -56,8 +56,17 @@ class DataParser(HTMLParser):
 			if self.process == PROCESS.ON:
 				self.data += '</content>'
 			self.process = PROCESS.END
+
+
+
 			
 WEIBO_REGEX = re.compile(r'<content>.*?</img>')
+
+CONTENT_REGEX = re.compile(r'<content>.*?</content>')
+IMG_REGEX = re.compile(r'<img>.*?</img>')
+
+THUMBIMG_REGEX = 'thumbnail'
+BIGIMG_REGEX = 'bmiddle'
 
 contentPath = os.path.dirname(__file__) + '/search.html'
 with open(contentPath,'r') as f:
@@ -65,5 +74,17 @@ with open(contentPath,'r') as f:
 	dp = DataParser()
 	dp.feed(content)
 	dp.close()
-	#print dp.links
-	print dp.data
+#	print dp.data.replace('\n', '')
+	result = []
+	for item in WEIBO_REGEX.findall(dp.data.replace('\n', '')):
+		weibos = []
+		imgs = []
+		for line in CONTENT_REGEX.findall(item):
+			weibos.append(line)
+		for line in IMG_REGEX.findall(item):
+			imgs.append(line.replace(THUMBIMG_REGEX,BIGIMG_REGEX))
+		weibo = (weibos[-1] + imgs[0]).replace(r'<img>','').replace('</img>','').replace('<content>','').replace('</content>','')
+		result.append(weibo)
+
+	for weibo in result:
+		print weibo
