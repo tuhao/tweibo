@@ -12,7 +12,7 @@ class Weibo:
 		self.key = 'q'
 		self.url = 'http://s.weibo.com/wb/'
 		self.params = dict()
-		self.content = None
+		self.result = None
 
 	def search(self,keyword):
 		self.params.update({self.key:keyword})
@@ -24,4 +24,10 @@ class Weibo:
 		headers = {'Referer':'http://weibo.com',
 					'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
 		req = urllib2.Request(self.url, None, headers)
-		self.content = urllib2.urlopen(req).read()
+		self.result = urllib2.urlopen(req).read()
+
+if __name__ == '__main__':
+	keyword = '美食'
+	weibo = Weibo()
+	weibo.search(keyword)
+	print weibo.result

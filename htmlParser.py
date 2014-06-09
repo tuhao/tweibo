@@ -10,6 +10,16 @@ def enum(**enums):
 
 PROCESS = enum(INIT = -1,START = 0,ON = 1,END = 2)
 
+TAG_S_CONTENT = '<content>'
+TAG_S_IMG = '<img>'
+TAG_E_CONTENT = '</content>'
+TAG_E_IMG = '</img>'
+WEIBO_REGEX = re.compile(TAG_S_CONTENT + r'.*?' + TAG_E_IMG)
+CONTENT_REGEX = re.compile(TAG_S_CONTENT + r'.*?' + TAG_E_CONTENT)
+IMG_REGEX = re.compile(TAG_S_IMG + r'.*?' +TAG_E_IMG)
+THUMBIMG_REGEX = 'thumbnail'
+BIGIMG_REGEX = 'bmiddle'
+
 class DataParser(HTMLParser):
 
 	def __init__(self):
@@ -36,15 +46,15 @@ class DataParser(HTMLParser):
 				if self.img:
 					if variable == 'src':
 						self.links.append(value)
-						self.data += '<img>'
+						self.data += TAG_S_IMG
 						self.data += value
-						self.data += '</img>'
+						self.data += TAG_E_IMG
 						self.img = None
 						break
 
 	def handle_data(self,data):
 		if self.process == PROCESS.START:
-			self.data += '<content>'
+			self.data += TAG_S_CONTENT
 			self.process = PROCESS.ON
 		elif self.process == PROCESS.ON:
 			self.data += data
@@ -54,37 +64,37 @@ class DataParser(HTMLParser):
 	def handle_endtag(self,tag):
 		if tag == 'p':
 			if self.process == PROCESS.ON:
-				self.data += '</content>'
+				self.data += TAG_E_CONTENT
 			self.process = PROCESS.END
 
 
+class WeiboParser:
 
-			
-WEIBO_REGEX = re.compile(r'<content>.*?</img>')
+	def __init__(self,data):
+		self.data = data
+		self.result = []
 
-CONTENT_REGEX = re.compile(r'<content>.*?</content>')
-IMG_REGEX = re.compile(r'<img>.*?</img>')
+	def parse(self):
+		for item in WEIBO_REGEX.findall(self.data.replace('\n', '')):
+			weibos = []
+			imgs = []
+			for line in CONTENT_REGEX.findall(item):
+				weibos.append(line)
+			for line in IMG_REGEX.findall(item):
+				imgs.append(line.replace(THUMBIMG_REGEX,BIGIMG_REGEX))
+			weibo = (weibos[-1] + imgs[0]).replace(TAG_S_IMG,'').replace(TAG_E_IMG,'').replace(TAG_S_CONTENT,'').replace(TAG_E_CONTENT,'')
+			self.result.append(weibo)
 
-THUMBIMG_REGEX = 'thumbnail'
-BIGIMG_REGEX = 'bmiddle'
 
-contentPath = os.path.dirname(__file__) + '/search.html'
-with open(contentPath,'r') as f:
-	content = f.read() 
-	dp = DataParser()
-	dp.feed(content)
-	dp.close()
-#	print dp.data.replace('\n', '')
-	result = []
-	for item in WEIBO_REGEX.findall(dp.data.replace('\n', '')):
-		weibos = []
-		imgs = []
-		for line in CONTENT_REGEX.findall(item):
-			weibos.append(line)
-		for line in IMG_REGEX.findall(item):
-			imgs.append(line.replace(THUMBIMG_REGEX,BIGIMG_REGEX))
-		weibo = (weibos[-1] + imgs[0]).replace(r'<img>','').replace('</img>','').replace('<content>','').replace('</content>','')
-		result.append(weibo)
-
-	for weibo in result:
-		print weibo
+if __name__ ==  '__main__':
+	contentPath = os.path.dirname(__file__) + '/search.html'
+	with open(contentPath,'r') as f:
+		content = f.read() 
+		dp = DataParser()
+		dp.feed(content)
+		dp.close()
+		#print dp.data.replace('\n', '')
+		parser = WeiboParser(dp.data)
+		parser.parse()
+		for weibo in parser.result:
+			print weibo
