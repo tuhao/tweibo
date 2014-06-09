@@ -93,7 +93,6 @@ if __name__ ==  '__main__':
 		dp = DataParser()
 		dp.feed(content)
 		dp.close()
-		#print dp.data.replace('\n', '')
 		parser = WeiboParser(dp.data)
 		parser.parse()
 		for weibo in parser.result:

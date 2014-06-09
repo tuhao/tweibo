@@ -1,31 +1,23 @@
 #coding=utf-8
 import datetime
 import time
+import TweiboParser
+import Tweibo
+import ThriftClient
+
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-from Tweibo import Tweibo
-from JsonGenerator import generate
-from MySQLClient import MySQLClient
-from ThriftClient import ThriftClient
 
 starttime = datetime.datetime.now() - datetime.timedelta(hours =1 )
 starttime = int(time.mktime(starttime.timetuple()))
 startpage = 1
 timestamp = int(time.time())
-weibo = Tweibo()
 
-
-def thrift_send(content):
-	thrift_client = ThriftClient()
-	thrift_client.send(content)
-
-def mysql_save(create_time,content):
-	mysql_client = MySQLClient()
-	with mysql_client:
-		mysql_client.insert(create_time,content)
+tweibo = Tweibo.Tweibo()		#tencent weibo
 
 keys=['美食','小吃']
+thrift_client = ThriftClient.ThriftClient()
 
 for key in keys:
 	while True:
@@ -37,13 +29,12 @@ for key in keys:
 				pagesize=30,
 				starttime=starttime,
 				endtime=timestamp,)
-		weibo.search(query)
-		result = generate(weibo.content)
+		tweibo.search(query)
+		result = TweiboParser.parse(tweibo.content)
 		create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-		#mysql_save(create_time,result[0])
-		thrift_send(result[0])
+		thrift_client.send(result[0])
 		if result[1] == '2' or result[1] == '0':
 			print 'hasnext %s ' % (result[1])
 			break
 		startpage = startpage + 1
-		time.sleep(2)
+		time.sleep(3)

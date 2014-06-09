@@ -1,7 +1,7 @@
 #coding=utf-8
 import json
 
-def generate(str_json):
+def parse(str_json):
 	hasnext = 0
 	msgs = list()
 	ret = json.loads(str_json)
