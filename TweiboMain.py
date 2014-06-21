@@ -2,7 +2,7 @@
 import datetime
 import time
 import TweiboParser
-import Tweibo
+import tweibo
 import ThriftClient
 
 import sys
@@ -14,7 +14,7 @@ starttime = int(time.mktime(starttime.timetuple()))
 startpage = 1
 timestamp = int(time.time())
 
-tweibo = Tweibo.Tweibo()		#tencent weibo
+tweibo = tweibo.Tweibo()		#tencent weibo
 
 keys=['美食','小吃']
 thrift_client = ThriftClient.ThriftClient()
